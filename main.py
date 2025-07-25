@@ -105,8 +105,7 @@ async def update_students(student_id: int, updateStudent: StudentVal, db: db_dep
     db.refresh(stud_edit)
     return stud_edit
 
-from fastapi import HTTPException
-
+# Partially updated the data
 @app.patch("/students/{student_id}")
 async def update_student(student_id: int, student_update: StudentVal, db: db_dependency):
     student_patch = db.query(Students).filter(Students.id == student_id).first()
