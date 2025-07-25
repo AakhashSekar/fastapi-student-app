@@ -91,7 +91,6 @@ async def add_Students(addStudents: StudentVal, db: db_dependency):
     db.refresh(db_users)
     return db_users
 
-
 # updates the existing student data
 @app.put('/student/update/{student_id}')
 async def update_students(student_id: int, updateStudent: StudentVal, db: db_dependency):
