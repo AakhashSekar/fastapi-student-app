@@ -106,6 +106,19 @@ async def update_students(student_id: int, updateStudent: StudentVal, db: db_dep
     db.refresh(stud_edit)
     return stud_edit
 
+from fastapi import HTTPException
+
+@app.patch("/students/{student_id}")
+async def update_student(student_id: int, student_update: StudentVal, db: db_dependency):
+    student_patch = db.query(Students).filter(Students.id == student_id).first()
+    if not student_patch:
+        raise HTTPException(status_code=404, detail="Student not found")
+    update_data = student_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(student_patch, key, value)
+    db.commit()
+    db.refresh(student_patch)
+    return student_patch
 
 # deletes the student data or entry
 @app.delete('/student/remove')
