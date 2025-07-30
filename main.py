@@ -4,9 +4,12 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from database import Engine, Session_Local
 from models import Students
+from auth import get_current_users
 import models
+import auth
 
 app = FastAPI()
+app.include_router(auth.router)
 
 # Create tables
 models.Base.metadata.create_all(bind=Engine)
@@ -21,7 +24,7 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
+user_dependency = Annotated[dict, Depends(get_current_users)]
 
 class StudentVal(BaseModel):
     id: int
@@ -84,7 +87,9 @@ async def get_Students_By_Year(year: int, db: db_dependency):
 
 # adds new student data  entry to student_db
 @app.post('/students/create')
-async def add_Students(addStudents: StudentVal, db: db_dependency):
+async def add_Students(user: user_dependency, addStudents: StudentVal, db: db_dependency):
+    if user is None:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, details = "Not a valid user")
     db_users = Students(**addStudents.model_dump())
     db.add(db_users)
     db.commit()
