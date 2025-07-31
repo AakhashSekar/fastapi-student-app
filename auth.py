@@ -23,8 +23,8 @@ SECRET = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
 ACCESS_TOKEN_EXPIRE_MINUTES = 20
 
-bcrypt_context = CryptContext(schemes=['bcrypt'], deprected='auto')
-oauth2_bearer = OAuth2PasswordBearer(tokenurl = 'auth/token')
+bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl = 'auth/token')
 
 #pydantic class for validation 
 class CreateUser(BaseModel):
@@ -52,7 +52,7 @@ async def create_user(create_user_request: CreateUser, db: db_dependency):
     db.commit()
     return {"message": "User created successfully"}
 
-@router.post('/token', respose_model = Token)
+@router.post('/token', response_model = Token)
 async def gendrate_token(formdata: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     user = authenticate_user(formdata.username, formdata.password, db)
     token = create_access_token(user.username, user.id)
